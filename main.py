@@ -32,11 +32,20 @@ def home_page():
     data =  cur.fetchall()
     return {"message": data}
 
+from pydantic import BaseModel
+
+# 1. تعريف شكل البيانات (Schema)
+class ProductModel(BaseModel):
+    name: str
+    price: float
+
+# 2. تعديل الـ Endpoint ليستقبل الـ Model في الـ Body
 @app.post("/add_product")
-def add_product(name: str, price: float):
-    cur.execute('''INSERT INTO products (name, price) VALUES (?, ?)''', (name, price))
+def add_product(product: ProductModel):
+    cur.execute('''INSERT INTO products (name, price) VALUES (?, ?)''', (product.name, product.price))
     con.commit()
     return {"message": "Product added successfully"}
+
 
 @app.put("/update_product/{product_id}")
 def update_product(product_id: int, name: str, price: float):
