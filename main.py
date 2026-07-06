@@ -7,6 +7,7 @@ get >> return date >> path paramter
 '''
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 
 con = sqlite3.connect('newdatabase.db', check_same_thread=False)
@@ -18,7 +19,13 @@ cur.execute('''CREATE TABLE IF NOT EXISTS products
             price REAL)''')
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # في الإنتاج تقدر تحدد رابط الـ Front-end بتاعك بالظبط
+    allow_credentials=True,
+    allow_methods=["*"], # السماح بـ GET, POST, PUT, DELETE
+    allow_headers=["*"],
+)
 @app.get("/")
 def home_page():
     cur.execute('''SELECT * FROM products''')
